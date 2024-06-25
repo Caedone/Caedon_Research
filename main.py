@@ -1,19 +1,21 @@
 # Caedon Ewing
 # Date: 6/25/2024
-# This code aims to combine the timestamp files by continuing the first file based on the numbers of rows in 
-# the other given files, incrementing by a number calculated by dividing the last two rows of the first file
+# This code aims to combine the timestamp files by continuing the first file based on
+# the numbers of rows in the other given files, incrementing by a number calculated by the difference between the
+# last two rows of the first file
 
-import numpy as np
+
 import pandas as pd
 
 # Input the path to all files you want to combine:
 csv_file_list = [r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Test\VTSA.csv",
-                 r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Test\VTSB.csv"] 
+                 r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Test\VTSB.csv",
+                 r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Test\VTSC.csv"]
 
-# Inpu the path to where you want to store the result
-output_file = r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Resultant.csv"  
+# Input the path to where you want to store the result
+output_file = r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Resultant.csv"
 
-X = True                # Sets temp value to final_row value
+X = True  # Sets temp value to final_row value
 
 
 # Function to read CSV file with space as delimiter
@@ -22,8 +24,9 @@ def read_csv_file(file_path):
         content = file.read().replace(' ', ',')
     with open(file_path, 'w') as file:
         file.write(content)
-    return pd.read_csv(file_path, usecols=[0,1], header=None)
-  
+    return pd.read_csv(file_path, usecols=[0, 1], header=None)
+
+
 # Function to replace the commas added with spaces
 def fix_Csv(file_path):
     with open(file_path, 'r') as file:
@@ -41,7 +44,7 @@ for i in range(len(csv_file_list)):
     if first_file:
         df_name = globals()[f"df_{i}"]  # Retrieve the DataFrame object using globals()
         final_row = df_name.iloc[-1].astype(int)  # Stores the final row of the first file
-        division = final_row / df_name.iloc[-2].astype(int)  # Divides the last two rows
+        subtraction = final_row - df_name.iloc[-2].astype(int)  # Divides the last two rows
 
         # Copies file to the output file
         df_name.to_csv(output_file, index=False, header=None)
@@ -52,9 +55,8 @@ for i in range(len(csv_file_list)):
     else:
         df = globals()[f"df_{i}"]  # Retrieve the DataFrame object using globals()
 
-
         row_count = len(df)  # Gets the amount of rows in file
-        if X == True:  # If initial iteration
+        if X:  # If initial iteration
             temp2 = final_row  # Copies the final row to temp variable
 
         # Initialize a list to accumulate row strings
@@ -62,7 +64,7 @@ for i in range(len(csv_file_list)):
 
         w = 0
         while w < row_count:
-            sum_row = (temp2 + division).astype(int)  # Add final row + the divided rows
+            sum_row = (temp2 + subtraction).astype(int)  # Add final row + the divided rows
             sum_row_str = sum_row.to_frame().T.to_csv(header=False, index=False).strip()  # Convert to CSV row string and strip newlines
             rows_to_write.append(sum_row_str)  # Add to list of rows to write
             temp2 = sum_row
@@ -73,8 +75,8 @@ for i in range(len(csv_file_list)):
             fd.write("\n".join(rows_to_write) + "\n")  # Join rows with newline and write to file
         X = False
 
-    fix_Csv(output_file)  # Restores resutltant CSV to orginal format
-    fix_Csv(csv_file_list[i])  # Restores CSV's given to orginal format 
+    fix_Csv(output_file)  # Restores resultant CSV to original format
+    fix_Csv(csv_file_list[i])  # Restores CSV's given to original format
 
     # Read the final output to verify
 print(pd.read_csv(output_file))
