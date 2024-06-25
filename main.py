@@ -1,10 +1,19 @@
+# Caedon Ewing
+# Date: 6/25/2024
+# This code aims to combine the timestamp files by continuing the first file based on the numbers of rows in 
+# the other given files, incrementing by a number calculated by dividing the last two rows of the first file
+
 import numpy as np
 import pandas as pd
 
+# Input the path to all files you want to combine:
 csv_file_list = [r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Test\VTSA.csv",
-                 r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Test\VTSB.csv"]  # Input CSV File names
-output_file = r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Resultant.csv"  # Result output name
-X = True
+                 r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Test\VTSB.csv"] 
+
+# Inpu the path to where you want to store the result
+output_file = r"C:\Users\gangliagurdian\Desktop\Unsupervised Learning\Test_Data\Resultant.csv"  
+
+X = True                # Sets temp value to final_row value
 
 
 # Function to read CSV file with space as delimiter
@@ -14,7 +23,8 @@ def read_csv_file(file_path):
     with open(file_path, 'w') as file:
         file.write(content)
     return pd.read_csv(file_path, usecols=[0,1], header=None)
-
+  
+# Function to replace the commas added with spaces
 def fix_Csv(file_path):
     with open(file_path, 'r') as file:
         content = file.read().replace(',', ' ')
@@ -26,7 +36,7 @@ def fix_Csv(file_path):
 for i in range(len(csv_file_list)):
     globals()[f"df_{i}"] = read_csv_file(csv_file_list[i])
 
-first_file = True
+first_file = True  # Keeps track if the first file is being read in
 for i in range(len(csv_file_list)):
     if first_file:
         df_name = globals()[f"df_{i}"]  # Retrieve the DataFrame object using globals()
@@ -63,8 +73,8 @@ for i in range(len(csv_file_list)):
             fd.write("\n".join(rows_to_write) + "\n")  # Join rows with newline and write to file
         X = False
 
-    fix_Csv(output_file)
-    fix_Csv(csv_file_list[i])
+    fix_Csv(output_file)  # Restores resutltant CSV to orginal format
+    fix_Csv(csv_file_list[i])  # Restores CSV's given to orginal format 
 
     # Read the final output to verify
 print(pd.read_csv(output_file))
